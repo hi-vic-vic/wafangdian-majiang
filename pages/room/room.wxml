@@ -35,7 +35,7 @@
     <view class="rule-note">选中的大牌按房间底分及庄家、自摸或点炮倍率相乘。</view>
   </view>
 
-  <view class="default-note">联机内测暂不开混、金蛋、放喜和彩杠。开局后规则锁定。</view>
+  <view class="default-note">混子可代牌吃碰，不能打出或杠。金蛋、放喜和彩杠暂不开。开局后规则锁定。</view>
   <button class="primary-button start" loading="{{busy}}" disabled="{{busy}}" bindtap="startRoom"><image class="start-background" src="/assets/whmj/room/Button_10_@2x.png" mode="scaleToFill" /><text>创建并邀请牌友</text></button>
   </view>
 </view>

@@ -1,6 +1,7 @@
 <template name="card">
   <image class="tile-base" src="/assets/whmj/table/{{card.image ? 'MahjongTile_0_0_@2x.png' : 'MahjongTile_0_7_@2x.png'}}" mode="scaleToFill" />
   <image wx:if="{{card.image}}" class="tile-face" src="{{card.image}}" mode="aspectFit" />
+  <text wx:if="{{card.wild}}" class="wild-badge">混</text>
 </template>
 <view class="table-page">
   <view class="table-topbar">
@@ -23,6 +24,7 @@
   <view class="table-center">
     <view class="compass"><image src="/assets/whmj/table/Pointer_Base_@2x.png" mode="aspectFit" /><text class="direction north {{turnPosition === 2 ? 'lit' : ''}}">对</text><text class="direction west {{turnPosition === 3 ? 'lit' : ''}}">上</text><text class="direction east {{turnPosition === 1 ? 'lit' : ''}}">下</text><text class="direction south {{turnPosition === 0 ? 'lit' : ''}}">我</text><text class="seconds">{{seconds}}</text></view>
   </view>
+  <view wx:if="{{wildLabel}}" class="wild-info">混子：{{wildLabel}} · 指示牌：{{indicatorLabel}}<text>{{openingText}}</text></view>
   <view class="status">{{status}}</view>
   <view wx:if="{{error}}" class="error">{{error}}</view>
   <view class="hand">

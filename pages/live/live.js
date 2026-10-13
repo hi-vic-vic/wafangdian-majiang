@@ -48,19 +48,19 @@ Page({
     const players = r.players.map(p => ({...p,
       position:positions[(p.seat-r.seat+4)%4], initial:(p.name || '空').slice(0,1),
       backs:Array.from({length:p.count},(_,i) => i), discards:p.discards.map(tile),
-      melds:p.melds.map((m,index) => ({...m,index,tiles:m.tiles.map(tile)})), delta:r.bill ? r.bill.delta[p.seat] : 0
+      melds:p.melds.map((m,index) => ({...m,index,tiles:m.tiles.map((t,i)=>({...tile((m.faces||m.tiles)[i],i),wild:t===r.wildTile,originalLabel:label(t)}))})), delta:r.bill ? r.bill.delta[p.seat] : 0
     }));
-    const hand = engine.sortTiles(r.hand).map(tile);
+    const hand = engine.sortTiles(r.hand).map((t,i)=>({...tile(t,i),wild:t===r.wildTile}));
     const drawnIndex = r.drawnTile ? hand.findIndex(t => t.id === r.drawnTile) : -1;
     if (drawnIndex >= 0) hand.push({...hand.splice(drawnIndex,1)[0],drawn:true});
-    this.setData({room:r,players,hand,selected:-1,turnPosition:(r.turn-r.seat+4)%4,
+    this.setData({room:r,players,hand,selected:-1,wildLabel:r.wildTile?label(r.wildTile):'',indicatorLabel:r.indicator?label(r.indicator):'',openingText:r.opening?'第一次 '+r.opening.firstDice.join('+')+' · '+r.players[r.opening.wallSeat].name+'第'+r.opening.indicatorStack+'墩上张；第二次 '+r.opening.secondDice.join('+')+'，合计'+r.opening.breakStacks+'墩':'',turnPosition:(r.turn-r.seat+4)%4,
       canDiscard:r.phase === 'running' && r.turn === r.seat,
       canReady:['lobby','settled'].includes(r.phase) && !r.players[r.seat].ready,
       status:({lobby:'等待四人准备',running:'轮到'+r.players[r.turn].name+'出牌',react:'等待吃碰杠胡响应',settled:'本局已结算',closed:'房间已解散'}[r.phase]) +
         (r.drawnTile ? ' · 刚摸 '+label(r.drawnTile) : ''),
       actions:r.actions.map((m,i) => ({...m,index:i,
         image:actionImages[m.type] ? '/assets/whmj/table/Button_'+actionImages[m.type]+'_@2x.png' : '',
-        label:({hu:'胡',peng:'碰',kong:'杠',add_kong:'补杠',chi:'吃',pass:'过'}[m.type])+' '+(m.tile ? label(m.tile) : '')+' '+(m.tiles || []).map(label).join(' ')
+        label:({hu:'胡',peng:'碰',kong:'杠',add_kong:'补杠',chi:'吃',pass:'过'}[m.type])+' '+(m.tile ? label(m.tile) : '')+' '+(m.tiles || []).map((t,j)=>t===r.wildTile&&m.faces?'混代'+label(m.faces[j]):label(t)).join(' ')
       }))});
   },
   send(m) {
@@ -69,8 +69,8 @@ Page({
     this.socket.send({data:JSON.stringify({...m,revision:this.room.revision})});
   },
   ready() { this.send({type:'ready'}); },
-  select(e) { this.setData({selected:Number(e.currentTarget.dataset.index)}); },
-  discard() { const t = this.data.hand[this.data.selected]; if (t) this.send({type:'discard',tile:t.id}); },
+  select(e) { const i=Number(e.currentTarget.dataset.index);if(this.data.hand[i]&&this.data.hand[i].wild){this.setData({selected:-1,error:'混子不能打出'});return} this.setData({selected:i}); },
+  discard() { const t = this.data.hand[this.data.selected]; if (t && !t.wild) this.send({type:'discard',tile:t.id}); },
   action(e) { this.send(this.room.actions[Number(e.currentTarget.dataset.index)]); },
   dissolve() { this.send({type:'dissolve'}); },
   cancel() { this.send({type:'cancel_vote'}); },

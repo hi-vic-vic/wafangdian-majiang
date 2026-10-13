@@ -50,6 +50,9 @@ func startTable(t *testing.T) (*Hub, *Room, []string) {
 func conserve(t *testing.T, r *Room) {
 	t.Helper()
 	a := append([]string{}, r.wall...)
+	if r.Indicator != "" {
+		a = append(a, r.Indicator)
+	}
 	for _, p := range r.Players {
 		a = append(a, p.hand...)
 		a = append(a, p.Discards...)
@@ -203,7 +206,7 @@ func TestHuPriorityAndNearestSeat(t *testing.T) {
 func TestRobKongNoKongPayment(t *testing.T) {
 	h, r, ts := startTable(t)
 	r.Turn = 0
-	r.Players[0].Melds = []Meld{{"peng", []string{"5z", "5z", "5z"}}}
+	r.Players[0].Melds = []Meld{{Kind: "peng", Tiles: []string{"5z", "5z", "5z"}}}
 	r.Players[0].hand = []string{"5z"}
 	r.Players[1].hand = strings.Fields("1m 2m 3m 2p 3p 4p 5s 6s 7s 1z 1z 1z 5z")
 	r.Players[2].hand = []string{}

@@ -3,7 +3,7 @@ const standardPreset = {
   rounds: 4,
   baseScore: 1,
   allowChi: false,
-  wildcards: false,
+  wildcards: true,
   bigHands: false,
   goldEgg: false,
   joyAndColorKong: false,
@@ -15,7 +15,7 @@ const roomOptions = {
   baseScore: [1, 2, 5, 10],
   toggles: [
     { key: 'allowChi', label: '允许吃牌', note: '仅可吃上家的数牌顺子' },
-    { key: 'wildcards', label: '开启混', note: '数牌按下一张翻混，四张均有效' },
+    { key: 'wildcards', label: '开启混', note: '两次骰子翻混；混可代牌吃碰，不能打出或杠' },
     { key: 'bigHands', label: '开启大牌', note: '可单项选择七小对、清一色等' }
   ]
 }

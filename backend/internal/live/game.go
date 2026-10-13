@@ -22,10 +22,12 @@ type Move struct {
 	Type  string   `json:"type"`
 	Tile  string   `json:"tile,omitempty"`
 	Tiles []string `json:"tiles,omitempty"`
+	Faces []string `json:"faces,omitempty"`
 }
 type Meld struct {
 	Kind  string   `json:"kind"`
 	Tiles []string `json:"tiles"`
+	Faces []string `json:"faces,omitempty"`
 }
 type Player struct {
 	Name      string   `json:"name"`
@@ -53,6 +55,9 @@ type View struct {
 	Seat       int      `json:"seat"`
 	Hand       []string `json:"hand"`
 	DrawnTile  string   `json:"drawnTile,omitempty"`
+	WildTile   string   `json:"wildTile,omitempty"`
+	Indicator  string   `json:"indicator,omitempty"`
+	Opening    *Opening `json:"opening,omitempty"`
 	Turn       int      `json:"turn"`
 	Dealer     int      `json:"dealer"`
 	Wall       int      `json:"wall"`
@@ -76,6 +81,8 @@ type Room struct {
 	Config                         Config
 	Players                        []*Player
 	wall                           []string
+	WildTile, Indicator            string
+	Opening                        *Opening
 	Turn, Dealer, Revision, Number int
 	deadline                       time.Time
 	pending                        *pending
@@ -126,9 +133,6 @@ func (h *Hub) Create(name string, c Config) (View, string, error) {
 	}
 	if c.BaseScore != 1 && c.BaseScore != 2 && c.BaseScore != 5 && c.BaseScore != 10 {
 		return View{}, "", errors.New("底分不合法")
-	}
-	if c.Wildcards {
-		return View{}, "", errors.New("混牌映射尚未确认，联机暂不开混")
 	}
 	if c.Rounds != 0 {
 		return View{}, "", errors.New("圈数定义待确认，联机采用逐局继续模式")
@@ -205,7 +209,7 @@ func (r *Room) view(s int) View {
 			if i != s && m.Kind == "concealed" {
 				ts = []string{"back", "back", "back", "back"}
 			}
-			v.Melds = append(v.Melds, Meld{m.Kind, ts})
+			v.Melds = append(v.Melds, Meld{Kind: m.Kind, Tiles: ts, Faces: append([]string(nil), m.Faces...)})
 		}
 		ps = append(ps, v)
 	}
@@ -223,7 +227,7 @@ func (r *Room) view(s int) View {
 	if !r.deadline.IsZero() {
 		dl = r.deadline.UnixMilli()
 	}
-	return View{Code: r.Code, Phase: r.Phase, Config: r.Config, Players: ps, Seat: s, Hand: append([]string{}, r.Players[s].hand...), DrawnTile: r.drawn[s], Turn: r.Turn, Dealer: r.Dealer, Wall: len(r.wall), Actions: r.options(s), Deadline: dl, Revision: r.Revision, HandNumber: r.Number, Bill: bill, History: append([]Bill{}, r.History...), Votes: vs}
+	return View{Code: r.Code, Phase: r.Phase, Config: r.Config, Players: ps, Seat: s, Hand: append([]string{}, r.Players[s].hand...), DrawnTile: r.drawn[s], WildTile: r.WildTile, Indicator: r.Indicator, Opening: r.Opening, Turn: r.Turn, Dealer: r.Dealer, Wall: len(r.wall), Actions: r.options(s), Deadline: dl, Revision: r.Revision, HandNumber: r.Number, Bill: bill, History: append([]Bill{}, r.History...), Votes: vs}
 }
 func deck() []string {
 	d := []string{}
@@ -251,6 +255,14 @@ func (r *Room) start() {
 		j := random(i + 1)
 		r.wall[i], r.wall[j] = r.wall[j], r.wall[i]
 	}
+	r.WildTile, r.Indicator, r.Opening = "", "", nil
+	if r.Config.Wildcards {
+		first := [2]int{random(6) + 1, random(6) + 1}
+		second := [2]int{random(6) + 1, random(6) + 1}
+		wall, indicator, opening := openWildWall(r.wall, r.Dealer, first, second)
+		r.wall, r.Indicator, r.Opening = wall, indicator, &opening
+		r.WildTile = nextWildTile(indicator)
+	}
 	r.gangs = [4]int{}
 	r.draws = [4]int{}
 	r.drawn = [4]string{}
@@ -262,8 +274,21 @@ func (r *Room) start() {
 		p.Ready = false
 		p.Melds = []Meld{}
 		p.Discards = []string{}
-		p.hand = append([]string{}, r.wall[:13]...)
-		r.wall = r.wall[13:]
+		p.hand = []string{}
+	}
+	// Three rounds of four tiles, then one each, starting with the dealer.
+	for batch := 0; batch < 4; batch++ {
+		n := 4
+		if batch == 3 {
+			n = 1
+		}
+		for step := 0; step < 4; step++ {
+			p := r.Players[(r.Dealer+step)%4]
+			p.hand = append(p.hand, r.wall[:n]...)
+			r.wall = r.wall[n:]
+		}
+	}
+	for _, p := range r.Players {
 		sort.Strings(p.hand)
 	}
 	r.draw(r.Dealer, false)

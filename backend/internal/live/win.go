@@ -93,15 +93,17 @@ func (r *Room) multiplier(s, source int) (int, string) {
 		names = append(names, "庄家×2")
 	}
 	h := r.Players[s].hand
-	c := counts(h)
+	wildCounts, wildCount := splitWild(h, r.WildTile)
 	all := append([]string{}, h...)
 	for _, m := range r.Players[s].Melds {
-		all = append(all, m.Tiles...)
+		all = append(all, meldFaces(m)...)
 	}
-	ac := counts(all)
 	suit := byte(0)
 	pure := true
 	for _, t := range all {
+		if r.isWild(t) {
+			continue
+		}
 		if t[1] == 'z' {
 			pure = false
 		}
@@ -111,7 +113,7 @@ func (r *Room) multiplier(s, source int) (int, string) {
 			pure = false
 		}
 	}
-	ps := map[string]bool{"七小对": len(h) == 14 && seven(c), "十三幺": len(h) == 14 && orphan(c), "清一色": pure, "大三元": ac[31] >= 3 && ac[32] >= 3 && ac[33] >= 3, "大四喜": ac[27] >= 3 && ac[28] >= 3 && ac[29] >= 3 && ac[30] >= 3, "天胡": source < 0 && s == r.Dealer && r.draws[s] == 1 && !r.interrupted && len(r.Players[s].Discards) == 0, "地胡": source < 0 && s != r.Dealer && r.draws[s] == 1 && !r.interrupted}
+	ps := map[string]bool{"七小对": len(h) == 14 && sevenWild(wildCounts, wildCount), "十三幺": len(h) == 14 && orphanWild(wildCounts, wildCount), "清一色": pure, "大三元": r.honorPattern(s, []int{31, 32, 33}), "大四喜": r.honorPattern(s, []int{27, 28, 29, 30}), "天胡": source < 0 && s == r.Dealer && r.draws[s] == 1 && !r.interrupted && len(r.Players[s].Discards) == 0, "地胡": source < 0 && s != r.Dealer && r.draws[s] == 1 && !r.interrupted}
 	for _, name := range r.Config.BigHands {
 		if ps[name] {
 			v := 2

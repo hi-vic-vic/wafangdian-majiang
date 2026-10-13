@@ -12,7 +12,7 @@ func (r *Room) canWin(s int, t string) bool {
 	if t != "" {
 		h = append(h, t)
 	}
-	return winning(h, r.Config.BigHands)
+	return winningWild(h, r.Config.BigHands, r.WildTile)
 }
 func (r *Room) options(s int) []Move {
 	a := []Move{}
@@ -32,13 +32,13 @@ func (r *Room) options(s int) []Move {
 	if len(r.wall) > 0 {
 		seen := map[string]bool{}
 		for _, t := range p.hand {
-			if !seen[t] && count(p.hand, t) == 4 {
+			if !seen[t] && !r.isWild(t) && count(p.hand, t) == 4 {
 				a = append(a, Move{Type: "kong", Tile: t})
 			}
 			seen[t] = true
 		}
 		for _, m := range p.Melds {
-			if m.Kind == "peng" && count(p.hand, m.Tiles[0]) > 0 {
+			if m.Kind == "peng" && !has(m.Tiles, r.WildTile) && !r.isWild(m.Tiles[0]) && count(p.hand, m.Tiles[0]) > 0 {
 				a = append(a, Move{Type: "add_kong", Tile: m.Tiles[0]})
 			}
 		}
@@ -57,11 +57,18 @@ func (r *Room) ask(from int, t string, rob bool) {
 		h := r.Players[s].hand
 		if !rob {
 			n := count(h, t)
-			if n >= 3 && len(r.wall) > 0 {
+			if n >= 3 && !r.isWild(t) && len(r.wall) > 0 {
 				a = append(a, Move{Type: "kong", Tile: t})
 			}
-			if n >= 2 {
-				a = append(a, Move{Type: "peng", Tile: t})
+			for _, spent := range r.meldSupplies(h, []string{t, t}) {
+				if spent[0] == t && spent[1] == t {
+					a = append(a, Move{Type: "peng", Tile: t})
+				} else {
+					if spent[0] == r.WildTile && spent[1] == t {
+						continue
+					}
+					a = append(a, Move{Type: "peng", Tile: t, Tiles: spent, Faces: []string{t, t}})
+				}
 			}
 			if r.Config.AllowChi && step == 1 && t[1] != 'z' {
 				rank := int(t[0] - '0')
@@ -75,8 +82,12 @@ func (r *Room) ask(from int, t string, rob bool) {
 							ts = append(ts, fmt.Sprintf("%d%c", v, t[1]))
 						}
 					}
-					if count(h, ts[0]) > 0 && count(h, ts[1]) > 0 {
-						a = append(a, Move{Type: "chi", Tile: t, Tiles: ts})
+					for _, spent := range r.meldSupplies(h, ts) {
+						m := Move{Type: "chi", Tile: t, Tiles: spent}
+						if spent[0] != ts[0] || spent[1] != ts[1] {
+							m.Faces = append([]string{}, ts...)
+						}
+						a = append(a, m)
 					}
 				}
 			}
@@ -93,11 +104,16 @@ func (r *Room) ask(from int, t string, rob bool) {
 	r.clock()
 }
 func equal(a, b Move) bool {
-	if a.Type != b.Type || a.Tile != b.Tile || len(a.Tiles) != len(b.Tiles) {
+	if a.Type != b.Type || a.Tile != b.Tile || len(a.Tiles) != len(b.Tiles) || len(a.Faces) != len(b.Faces) {
 		return false
 	}
 	for i := range a.Tiles {
 		if a.Tiles[i] != b.Tiles[i] {
+			return false
+		}
+	}
+	for i := range a.Faces {
+		if a.Faces[i] != b.Faces[i] {
 			return false
 		}
 	}
@@ -138,7 +154,7 @@ func (r *Room) resolve() {
 		return
 	}
 	ts := []string{p.tile}
-	if m.Type == "chi" {
+	if m.Type == "chi" || (m.Type == "peng" && len(m.Tiles) > 0) {
 		for _, t := range m.Tiles {
 			target.hand = remove(target.hand, t, 1)
 			ts = append(ts, t)
@@ -153,8 +169,13 @@ func (r *Room) resolve() {
 			ts = append(ts, p.tile)
 		}
 	}
-	sort.Strings(ts)
-	target.Melds = append(target.Melds, Meld{m.Type, ts})
+	faces := []string(nil)
+	if len(m.Faces) > 0 {
+		faces = append([]string{p.tile}, m.Faces...)
+	} else {
+		sort.Strings(ts)
+	}
+	target.Melds = append(target.Melds, Meld{Kind: m.Type, Tiles: ts, Faces: faces})
 	r.interrupted = true
 	r.Turn = best
 	r.Phase = "running"
@@ -169,7 +190,7 @@ func (r *Room) completeAdd(s int, t string) {
 	p.hand = remove(p.hand, t, 1)
 	for i, m := range p.Melds {
 		if m.Kind == "peng" && m.Tiles[0] == t {
-			p.Melds[i] = Meld{"kong", []string{t, t, t, t}}
+			p.Melds[i] = Meld{Kind: "kong", Tiles: []string{t, t, t, t}}
 			break
 		}
 	}
@@ -270,6 +291,9 @@ func (r *Room) act(s int, m Move) error {
 			return errors.New("还未轮到你出牌")
 		}
 		p := r.Players[s]
+		if r.isWild(m.Tile) {
+			return errors.New("混子不能打出")
+		}
 		if count(p.hand, m.Tile) == 0 {
 			return errors.New("不能打出不在手中的牌")
 		}
@@ -301,7 +325,7 @@ func (r *Room) act(s int, m Move) error {
 	case "kong":
 		p := r.Players[s]
 		p.hand = remove(p.hand, m.Tile, 4)
-		p.Melds = append(p.Melds, Meld{"concealed", []string{m.Tile, m.Tile, m.Tile, m.Tile}})
+		p.Melds = append(p.Melds, Meld{Kind: "concealed", Tiles: []string{m.Tile, m.Tile, m.Tile, m.Tile}})
 		r.gangs[s] += 10
 		r.interrupted = true
 		r.draw(s, true)
@@ -320,7 +344,13 @@ func (h *Hub) Tick() []string {
 		}
 		if r.Phase == "running" {
 			s := r.Turn
-			_ = r.act(s, Move{Type: "discard", Tile: r.Players[s].hand[len(r.Players[s].hand)-1]})
+			if t := r.discardTile(s); t != "" {
+				_ = r.act(s, Move{Type: "discard", Tile: t})
+			} else if r.canWin(s, "") {
+				_ = r.act(s, Move{Type: "hu"})
+			} else {
+				r.finish(-1, -1)
+			}
 		} else if r.Phase == "react" {
 			for s := range r.pending.options {
 				if _, ok := r.pending.answers[s]; !ok {

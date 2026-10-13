@@ -137,10 +137,9 @@ function nextWildTile(indicator) {
   const suit = tileSuit(indicator)
   const rank = tileRank(indicator)
   if (SUITS.includes(suit)) return `${rank === 9 ? 1 : rank + 1}${suit}`
-  // 已确认的本地例子：翻北风，南风为混。其余字牌映射不可按通用顺序臆测。
-  const confirmedHonorMap = { '4z': '2z' }
-  if (confirmedHonorMap[indicator]) return confirmedHonorMap[indicator]
-  throw new Error(`字牌 ${indicator} 的翻混映射尚未确认`)
+  // 本地风牌循环为东西南北，编码仍沿用东南西北。
+  const honorMap = { '1z': '3z', '3z': '2z', '2z': '4z', '4z': '1z', '5z': '6z', '6z': '7z', '7z': '5z' }
+  return honorMap[indicator]
 }
 
 function calculateWinSettlement({

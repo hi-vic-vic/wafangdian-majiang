@@ -56,3 +56,21 @@ test('34 种牌映射到上游资源；摸牌置于右侧且重复牌不会丢�
   instance.discard()
   assert.deepEqual(sent, {type: 'discard', tile: '1m'})
 })
+
+test('混子标记、开局骰子展示和禁出；吃碰说明显示代牌', () => {
+  const instance = render(2, {
+    wildTile:'1m', indicator:'9m', drawnTile:'1m',
+    opening:{firstDice:[3,4],secondDice:[2,5],wallSeat:0,indicatorStack:7,breakStacks:14},
+    actions:[{type:'peng',tile:'3m',tiles:['3m','1m'],faces:['3m','3m']}]
+  })
+  assert.equal(instance.data.hand.filter(t=>t.wild).length,2)
+  assert.equal(instance.data.wildLabel,'1万')
+  assert.match(instance.data.openingText,/合计14墩/)
+  assert.match(instance.data.actions[0].label,/混代3万/)
+  let sent
+  instance.send=m=>{sent=m}
+  instance.select({currentTarget:{dataset:{index:instance.data.hand.findIndex(t=>t.wild)}}})
+  instance.discard()
+  assert.equal(sent,undefined)
+  assert.equal(instance.data.error,'混子不能打出')
+})

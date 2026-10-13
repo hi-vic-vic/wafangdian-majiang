@@ -11,12 +11,21 @@ import (
 )
 
 func TestFourSocketsDealAndReconnect(t *testing.T) {
+	for _, wild := range []bool{false, true} {
+		name := "without-mixed"
+		if wild {
+			name = "with-mixed"
+		}
+		t.Run(name, func(t *testing.T) { testFourSocketsDealAndReconnect(t, wild) })
+	}
+}
+func testFourSocketsDealAndReconnect(t *testing.T, wild bool) {
 	s := NewServer()
 	srv := httptest.NewServer(s.Handler())
 	defer srv.Close()
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	v, token, e := s.Hub.Create("A", Config{BaseScore: 1})
+	v, token, e := s.Hub.Create("A", Config{BaseScore: 1, Wildcards: wild})
 	if e != nil {
 		t.Fatal(e)
 	}
@@ -75,6 +84,9 @@ func TestFourSocketsDealAndReconnect(t *testing.T) {
 	s.Broadcast(v.Code)
 	for i, c := range cs {
 		got := read(c, state.Revision)
+		if wild && (got.WildTile != state.WildTile || got.Indicator != state.Indicator || got.Opening == nil) {
+			t.Fatal("missing shared mixed opening")
+		}
 		if got.Seat != i {
 			t.Fatal("wrong private recipient")
 		}
