@@ -1,0 +1,14 @@
+# Local development and generated files
+.local/
+node_modules/
+/backend/server
+/backend/mahjong-local
+project.private.config.json
+.DS_Store
+__MACOSX/
+._*
+*.log
+*.pid
+.env
+.env.*
+!.env.example
