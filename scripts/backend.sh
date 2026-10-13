@@ -6,7 +6,8 @@ STATE="$ROOT/.local/backend"
 BIN="$STATE/mahjong-local"
 PID_FILE="$STATE/server.pid"
 LOG_FILE="$STATE/server.log"
-URL="http://127.0.0.1:8081"
+LISTEN_ADDR="${ADDR:-192.168.124.19:8081}"
+URL="http://$LISTEN_ADDR"
 
 managed_pid() {
   [[ -f "$PID_FILE" ]] || return 1
@@ -44,7 +45,7 @@ start() {
   (
     cd "$ROOT/backend"
     # Create a separate session so the launching terminal's process group can exit.
-    ADDR=127.0.0.1:8081 nohup perl -MPOSIX -e 'POSIX::setsid() != -1 or die "setsid: $!"; exec @ARGV or die "exec: $!"' "$BIN" >>"$LOG_FILE" 2>&1 </dev/null &
+    ADDR="$LISTEN_ADDR" nohup perl -MPOSIX -e 'POSIX::setsid() != -1 or die "setsid: $!"; exec @ARGV or die "exec: $!"' "$BIN" >>"$LOG_FILE" 2>&1 </dev/null &
     echo $! >"$PID_FILE"
   )
   local attempt

@@ -29,7 +29,120 @@
   },
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [{"type":"folder","value":"backend"}],
+    "ignore": [
+      {
+        "value": "backend",
+        "type": "folder"
+      },
+      {
+        "type": "folder",
+        "value": ".local"
+      },
+      {
+        "type": "folder",
+        "value": "docs"
+      },
+      {
+        "type": "folder",
+        "value": "scripts"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_11.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_12.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_13.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_14.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_15.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_16.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_24.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_26.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_27.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_28.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_29.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_31.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_35.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_36.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_37.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_38.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_39.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_42.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_43.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_44.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_45.png"
+      },
+      {
+        "type": "file",
+        "value": "assets/mahjong/handmah_47.png"
+      },
+      {
+        "type": "file",
+        "value": "pages/live/live.test.js"
+      },
+      {
+        "type": "file",
+        "value": "utils/mahjong-engine.test.js"
+      }
+    ],
     "include": []
   },
   "editorSetting": {}
