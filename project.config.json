@@ -1,0 +1,36 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "瓦房店推倒胡",
+  "description": "瓦房店推倒胡 - 四人熟人积分房原型",
+  "appid": "wx32a514125c6d4094",
+  "compileType": "miniprogram",
+  "setting": {
+    "es6": true,
+    "minified": false,
+    "urlCheck": false,
+    "postcss": false,
+    "compileWorklet": false,
+    "uglifyFileName": false,
+    "uploadWithSourceMap": true,
+    "enhance": false,
+    "packNpmManually": false,
+    "packNpmRelationList": [],
+    "minifyWXSS": true,
+    "minifyWXML": true,
+    "localPlugins": false,
+    "disableUseStrict": false,
+    "useCompilerPlugins": false,
+    "condition": false,
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    }
+  },
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [{"type":"folder","value":"backend"}],
+    "include": []
+  },
+  "editorSetting": {}
+}

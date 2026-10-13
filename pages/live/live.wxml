@@ -1,0 +1,46 @@
+<template name="card">
+  <image class="tile-base" src="/assets/whmj/table/{{card.image ? 'MahjongTile_0_0_@2x.png' : 'MahjongTile_0_7_@2x.png'}}" mode="scaleToFill" />
+  <image wx:if="{{card.image}}" class="tile-face" src="{{card.image}}" mode="aspectFit" />
+</template>
+<view class="table-page">
+  <view class="table-topbar">
+    <button class="more-button" bindtap="toggleMore" aria-label="更多"><image src="/assets/whmj/table/Button_More_@2x.png" mode="aspectFit" /></button>
+    <view class="table-brand">瓦房店推倒胡</view>
+    <view class="room-info">房间 {{room.code || '连接中'}}<text>第 {{room.handNumber || 0}} 局 · 余 {{room.wall || 0}} 张</text></view>
+  </view>
+  <view wx:for="{{players}}" wx:key="seat" class="player player-{{item.position}} {{item.seat === room.turn ? 'active' : ''}}">
+    <view class="player-profile">
+      <view class="avatar">{{item.initial}}<image wx:if="{{item.seat === room.dealer}}" class="dealer" src="/assets/whmj/table/Flag_ZhuangJia_@2x.png" mode="aspectFit" /></view>
+      <view class="player-name">{{item.name || '等待加入'}}{{item.seat === room.seat ? '（你）' : ''}}</view>
+      <view class="player-score">{{item.score}} 分 · {{item.ready ? '已准备' : item.connected ? '在线' : '离线'}}</view>
+    </view>
+    <view wx:if="{{item.seat !== room.seat}}" class="concealed-hand"><image wx:for="{{item.backs}}" wx:for-item="back" wx:key="*this" src="/assets/whmj/table/MahjongTile_0_7_@2x.png" mode="scaleToFill" /></view>
+    <view class="melds"><view wx:for="{{item.melds}}" wx:for-item="meld" wx:key="index" class="meld"><view wx:for="{{meld.tiles}}" wx:for-item="card" wx:key="index" class="small-tile"><template is="card" data="{{card}}" /></view></view></view>
+  </view>
+  <view class="rivers">
+    <view wx:for="{{players}}" wx:key="seat" class="river river-{{item.position}}"><view wx:for="{{item.discards}}" wx:for-item="card" wx:key="index" class="small-tile"><template is="card" data="{{card}}" /></view></view>
+  </view>
+  <view class="table-center">
+    <view class="compass"><image src="/assets/whmj/table/Pointer_Base_@2x.png" mode="aspectFit" /><text class="direction north {{turnPosition === 2 ? 'lit' : ''}}">对</text><text class="direction west {{turnPosition === 3 ? 'lit' : ''}}">上</text><text class="direction east {{turnPosition === 1 ? 'lit' : ''}}">下</text><text class="direction south {{turnPosition === 0 ? 'lit' : ''}}">我</text><text class="seconds">{{seconds}}</text></view>
+  </view>
+  <view class="status">{{status}}</view>
+  <view wx:if="{{error}}" class="error">{{error}}</view>
+  <view class="hand">
+    <view wx:for="{{hand}}" wx:key="index" data-index="{{index}}" bindtap="select" aria-role="button" aria-label="{{item.label}}" class="tile {{selected === index ? 'selected' : ''}} {{item.drawn ? 'drawn' : ''}}"><template is="card" data="{{card:item}}" /></view>
+  </view>
+  <scroll-view class="action-scroll" scroll-x="true">
+    <view class="actions">
+      <button wx:if="{{canReady}}" class="text-action" bindtap="ready">准备 / 下一局</button>
+      <button wx:if="{{canDiscard}}" class="text-action discard" disabled="{{selected < 0}}" bindtap="discard">出牌</button>
+      <button wx:for="{{actions}}" wx:key="index" class="action-button" data-index="{{item.index}}" bindtap="action" aria-label="{{item.label}}"><image wx:if="{{item.image}}" src="{{item.image}}" mode="aspectFit" /><text class="action-label">{{item.label}}</text></button>
+    </view>
+  </scroll-view>
+  <view wx:if="{{showMore || !room}}" class="more-panel"><button wx:if="{{room}}" bindtap="dissolve">申请 / 同意解散</button><button open-type="share" wx:if="{{room}}">邀请好友</button><button bindtap="back">返回首页</button></view>
+  <button wx:if="{{room}}" class="invite-button" open-type="share" aria-label="邀请好友"><image src="/assets/whmj/table/Button_Invite_@2x.png" mode="aspectFit" /></button>
+  <view wx:if="{{room.bill || room.votes.length}}" class="result-panel">
+    <scroll-view scroll-y="true" class="result-content">
+      <view wx:if="{{room.bill}}" class="bill"><view class="result-title">本局结算 · {{room.bill.reason}}</view><view wx:for="{{players}}" wx:key="seat" class="score-row"><text>{{item.name}}</text><text>本局 {{item.delta}} 分</text><text>总分 {{item.score}}</text></view><button wx:if="{{canReady}}" bindtap="ready">准备下一局</button></view>
+      <view wx:if="{{room.votes.length}}" class="vote"><view>解散投票 {{room.votes.length}} / 4</view><view class="vote-buttons"><button bindtap="dissolve">同意解散</button><button bindtap="cancel">拒绝</button></view></view>
+    </scroll-view>
+  </view>
+</view>

@@ -1,0 +1,4 @@
+{
+  "desc": "麻将原型不需要收录",
+  "rules": [{ "action": "disallow", "page": "*" }]
+}

@@ -1,0 +1,23 @@
+<view class="page home">
+  <image class="hall-background" src="/assets/whmj/hall/HallSceneBG@2x.jpg" mode="aspectFill" />
+  <view class="hall-content">
+    <view class="topbar">
+      <view class="profile"><view class="avatar">友</view><view><view class="profile-name">瓦房店牌友</view><view class="profile-note">熟人开房 · 纯积分</view></view></view>
+      <button class="rules-button" bindtap="openRules">玩法规则</button>
+    </view>
+    <view class="hall-title">瓦房店<text>推倒胡</text></view>
+    <view class="hall-subtitle">四个人，一桌熟人牌</view>
+    <view class="actions">
+      <button class="image-button" bindtap="createRoom" aria-label="创建房间"><image src="/assets/whmj/hall/Button_CreateRoom_@2x.png" mode="aspectFit" /></button>
+      <button class="image-button" bindtap="joinRoom" aria-label="加入房间"><image src="/assets/whmj/hall/Button_JoinRoom_@2x.png" mode="aspectFit" /></button>
+    </view>
+    <view class="recent">
+      <view class="section-row"><view class="section-title">最近牌桌</view><text class="recent-note">136 张 · 瓦房店本地玩法</text></view>
+      <view wx:if="{{!recentRooms.length}}" class="empty-room">创建一桌，邀请你的牌友一起加入</view>
+      <view wx:for="{{recentRooms}}" wx:key="code" class="room-row" bindtap="openRoom">
+        <view class="room-icon">🀄</view><view class="room-info"><view class="room-name">{{item.host}}</view><view class="room-code">房间 {{item.code}}</view></view><view class="room-status">{{item.status}} ›</view>
+      </view>
+    </view>
+    <view class="hall-footer">每局只记录积分 · 好友相约，轻松开桌</view>
+  </view>
+</view>

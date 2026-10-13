@@ -1,0 +1,24 @@
+.home { position: relative; padding: 0; background: #4a968a; }
+.hall-background { position: fixed; inset: 0; width: 100%; height: 100%; }
+.hall-content { position: relative; min-height: 100vh; padding: 32rpx; box-sizing: border-box; background: linear-gradient(180deg, rgba(7,54,47,.12), transparent 40%, rgba(13,47,55,.35)); }
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 16rpx; }
+.profile { display: flex; align-items: center; gap: 16rpx; }
+.avatar { width: 76rpx; height: 76rpx; border: 3rpx solid #ffe6ab; border-radius: 14rpx; display: flex; align-items: center; justify-content: center; color: #fff4c7; background: #216555; font-size: 36rpx; box-shadow: 0 4rpx 8rpx #244f4666; }
+.profile-name { color: #fffbdc; font-weight: 700; font-size: 29rpx; text-shadow: 0 2rpx 4rpx #184d43; }
+.profile-note { color: #fff; font-size: 21rpx; margin-top: 5rpx; text-shadow: 0 2rpx 4rpx #184d43; }
+.rules-button { margin: 0; padding: 0 20rpx; line-height: 60rpx; border-radius: 20rpx; color: #fff2c2; background: #276d60dd; font-size: 24rpx; }
+.rules-button::after, .image-button::after { border: 0; }
+.hall-title { margin-top: 85rpx; text-align: center; color: #fff8da; font-weight: 900; font-size: 54rpx; text-shadow: 0 4rpx 0 #56723c, 0 8rpx 14rpx #184e45; }
+.hall-title text { display: block; color: #fff0a1; font-size: 90rpx; letter-spacing: 10rpx; margin-top: 6rpx; }
+.hall-subtitle { text-align: center; color: #fff; font-size: 28rpx; letter-spacing: 4rpx; text-shadow: 0 2rpx 6rpx #275448; margin: 14rpx 0 44rpx; }
+.actions { display: flex; gap: 18rpx; justify-content: center; }
+.image-button { background: transparent; padding: 0; margin: 0; width: 300rpx; height: 216rpx; line-height: 0; }
+.image-button image { width: 100%; height: 100%; }
+.recent { margin-top: 50rpx; padding: 26rpx; background: rgba(255,248,222,.93); border: 3rpx solid #f1d4a0; border-radius: 20rpx; box-shadow: 0 8rpx 18rpx #193e4b44; }
+.section-row { display: flex; justify-content: space-between; align-items: center; gap: 10rpx; }
+.section-title { font-size: 30rpx; color: #7c4d29; }
+.recent-note { font-size: 20rpx; color: #947450; }
+.empty-room { padding: 32rpx 0 16rpx; text-align: center; color: #997d59; font-size: 25rpx; }
+.room-row { display: flex; align-items: center; gap: 16rpx; min-height: 110rpx; }
+.room-icon { font-size: 44rpx; }.room-info { flex: 1; }.room-name { color: #624829; font-size: 28rpx; font-weight: 700; }.room-code { color: #947450; font-size: 23rpx; margin-top: 8rpx; }.room-status { color: #2a7960; font-size: 26rpx; }
+.hall-footer { text-align: center; color: #fff5d6; font-size: 23rpx; margin-top: 36rpx; padding-bottom: env(safe-area-inset-bottom); text-shadow: 0 2rpx 5rpx #244b4f; }

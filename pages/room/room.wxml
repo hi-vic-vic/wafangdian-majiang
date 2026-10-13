@@ -1,0 +1,41 @@
+<view class="page room-page">
+  <image class="room-background" src="/assets/whmj/hall/HallSceneBG@2x.jpg" mode="aspectFill" />
+  <view class="room-content">
+  <image class="room-title" src="/assets/whmj/room/Text_ChuangJianFangJian_@2x.png" mode="aspectFit" />
+  <view class="eyebrow">开房前可改，开局后锁定</view>
+  <view class="headline">创建一桌推倒胡</view>
+  <view class="muted intro">默认采用标准瓦房店推倒胡。地方变体由房主在开局前确认。</view>
+
+  <view class="surface settings">
+    <view class="setting-block">
+      <view class="setting-label">逐局继续</view>
+      <view class="muted">每局结算后，四人准备进入下一局；可投票解散。</view>
+    </view>
+    <view class="setting-block">
+      <view class="setting-label">底分</view>
+      <view class="segmented"><block wx:for="{{roomOptions.baseScore}}" wx:key="*this"><view class="segment {{config.baseScore === item ? 'selected' : ''}}" data-value="{{item}}" bindtap="chooseBase"><image class="radio-image" src="/assets/whmj/room/RadioButton_{{config.baseScore === item ? 'Checked' : 'BG'}}_@2x.png" mode="aspectFit" />{{item}} 分</view></block></view>
+    </view>
+    <view class="rule-list">
+      <block wx:for="{{roomOptions.toggles}}" wx:key="key">
+        <view class="rule-item" data-key="{{item.key}}" bindtap="toggleRule">
+          <view><view class="rule-name">{{item.label}}</view><view class="rule-note">{{item.note}}</view></view>
+          <image class="check-image" src="/assets/whmj/room/CheckBox_{{config[item.key] ? 'Checked' : 'BG'}}_@2x.png" mode="aspectFit" />
+        </view>
+      </block>
+    </view>
+  </view>
+
+  <view wx:if="{{config.bigHands}}" class="surface big-hand-panel">
+    <view class="setting-label">启用的大牌</view>
+    <view class="chip-wrap">
+      <block wx:for="{{bigChoices}}" wx:key="name">
+        <view class="chip {{item.checked ? 'checked' : ''}}" data-name="{{item.name}}" bindtap="toggleBigHand">{{item.name}}</view>
+      </block>
+    </view>
+    <view class="rule-note">选中的大牌按房间底分及庄家、自摸或点炮倍率相乘。</view>
+  </view>
+
+  <view class="default-note">联机内测暂不开混、金蛋、放喜和彩杠。开局后规则锁定。</view>
+  <button class="primary-button start" loading="{{busy}}" disabled="{{busy}}" bindtap="startRoom"><image class="start-background" src="/assets/whmj/room/Button_10_@2x.png" mode="scaleToFill" /><text>创建并邀请牌友</text></button>
+  </view>
+</view>

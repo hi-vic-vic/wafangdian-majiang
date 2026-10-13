@@ -1,0 +1,18 @@
+{
+  "pages": [
+    "pages/home/home",
+    "pages/live/live",
+    "pages/room/room",
+    "pages/table/table",
+    "pages/rules/rules"
+  ],
+  "window": {
+    "navigationBarTitleText": "瓦房店推倒胡",
+    "navigationBarBackgroundColor": "#0E493B",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F2F5F2",
+    "backgroundTextStyle": "light"
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

@@ -1,0 +1,9 @@
+<view class="page rules-page">
+  <view class="eyebrow">房主开局前确认</view>
+  <view class="headline">瓦房店推倒胡</view>
+  <view class="muted intro">这不是大连穷胡。推倒胡不强制开门、三门齐、幺九或一刻。</view>
+  <view class="surface rule-card"><view class="card-title">基础规则</view><block wx:for="{{baseRules}}" wx:key="*this"><view class="rule-line"><view class="rule-index">{{index + 1}}</view><view>{{item}}</view></view></block></view>
+  <view class="surface rule-card"><view class="card-title">倍率与结算</view><view class="rule-line"><view class="rule-index">×2</view><view>庄家胡牌、自摸、点炮以及已开启的大牌倍率可相乘。</view></view><view class="rule-line"><view class="rule-index">杠</view><view>明杠每家 5 分，暗杠每家 10 分。荒庄不计杠钱。</view></view></view>
+  <view class="surface rule-card"><view class="card-title">开启混时</view><view class="rule-line"><view class="rule-index">混</view><view>数牌翻同类下一张为混，四张均有效。已确认北风翻南风；其他字牌映射须由本地规则表确认。</view></view><view class="rule-line"><view class="rule-index">听</view><view>所有胡牌张仅为混时，混吊仅可自摸。</view></view></view>
+  <view class="notice">金蛋、放喜和彩杠暂不开放，避免未确认的地方变体影响积分结算。</view>
+</view>

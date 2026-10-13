@@ -1,0 +1,28 @@
+<view class="table-page">
+  <view class="table-header">
+    <view><view class="room-code">房间 {{roomCode}}</view><view class="round-info">第 1 圈 / {{config.rounds}} 圈 · 底分 {{config.baseScore}}</view></view>
+    <view class="leave" bindtap="leave">解散</view>
+  </view>
+
+  <view class="mahjong-table">
+    <view class="player top"><view class="mini-avatar warm">燕</view><view><view>海燕</view><view class="player-meta">对家 · 0 分</view></view></view>
+    <view class="player left"><view class="mini-avatar">涛</view><view><view>阿涛</view><view class="player-meta">上家 · 0 分</view></view></view>
+    <view class="player right"><view class="mini-avatar dark">程</view><view><view>老程</view><view class="player-meta">下家 · 0 分</view></view></view>
+    <view class="center-info"><view class="wall-count">余 79 张</view><view class="turn-mark">你的回合</view><view class="timer">{{countdown}} 秒</view></view>
+  </view>
+
+  <view class="event-line">{{status}}</view>
+  <view class="hand-area">
+    <block wx:for="{{hand}}" wx:key="index">
+      <view class="hand-tile image-tile {{selected === index ? 'selected' : ''}}" aria-role="button" aria-label="{{item.label}}" data-index="{{index}}" bindtap="selectTile"><image class="tile-image" src="{{item.image}}" mode="aspectFit" /></view>
+    </block>
+  </view>
+  <view class="action-bar">
+    <button class="table-action subtle" data-action="碰" bindtap="showAction">碰</button>
+    <button class="table-action subtle" data-action="杠" bindtap="showAction">杠</button>
+    <button class="table-action hu" data-action="胡" bindtap="showAction">胡</button>
+    <button class="table-action play" bindtap="playTile">出牌</button>
+  </view>
+  <view class="log-title">牌局记录</view>
+  <view class="log-box"><block wx:for="{{log}}" wx:key="*this"><view class="log-item">{{item}}</view></block></view>
+</view>
